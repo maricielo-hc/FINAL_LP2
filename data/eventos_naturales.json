@@ -1,4 +1,4 @@
-const eventosNaturales = [
+[
   {
     "tipo": "Incendio",
     "fecha": "2025-07-11",
@@ -371,4 +371,4 @@ const eventosNaturales = [
     "lat": -5.4814,
     "lon": -76.9633
   }
-];
+]
