@@ -1,46 +1,40 @@
 name: Actualizar eventos naturales en Perú
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'  # Cada 6 horas
-  workflow_dispatch:        # También puedes ejecutarlo manualmente
+    - cron: '0 */6 * * *'
 
 jobs:
-  actualizar_eventos:
+  ejecutar_eventos:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar el repositorio
+      - name: 📥 Clonar el repositorio
         uses: actions/checkout@v3
 
-      - name: Configurar Python
+      - name: 🐍 Configurar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Instalar dependencias
+      - name: 📦 Instalar dependencias
         run: pip install requests
 
-      - name: Ejecutar script eventos_naturales.py
+      - name: 🔍 Ver archivos y estructura del repo
+        run: |
+          echo "Contenido actual:"
+          ls -R
+
+      - name: 🚀 Ejecutar script eventos_naturales.py
         run: python scripts/eventos_naturales.py
 
-      - name: Mostrar archivos generados
-        run: |
-          echo "Contenido de /data:"
-          ls -lh data/
-          echo "Contenido de /js:"
-          ls -lh js/
-          echo "Vista previa de eventos_naturales.js:"
-          head -n 10 js/eventos_naturales.js || echo "Archivo no encontrado"
-
-      - name: 📤 Subir cambios si los hay
+      - name: 📤 Subir cambios al repositorio
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN_TRABAJO_FINAL }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
-
-          git add data/eventos_naturales.json js/eventos_naturales.js
-          git commit -m "Actualización automática: eventos naturales en Perú" || echo "No hay cambios que subir"
-          git push || echo "No se pudo hacer push"
+          git add .
+          git commit -m "🔄 Actualización automática de eventos naturales" || echo "Sin cambios que commitear"
+          git push || echo "❌ No se pudo hacer push"
