@@ -1,0 +1,45 @@
+name: Actualizar eventos naturales en Per√∫
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  actualizar_eventos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ì≥• Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Ì∞ç Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Ì≥¶ Instalar dependencias
+        run: pip install requests
+
+      - name: ‚ñ∂Ô∏è Ejecutar script de eventos naturales
+        run: python scripts/eventos_naturales.py
+
+      - name: Ì≥Ç Mostrar archivos generados
+        run: |
+          ls -lh data/
+          ls -lh js/
+          head -n 10 data/eventos_naturales.json || echo "No se encontr√≥ JSON"
+          head -n 10 js/eventos_naturales.js || echo "No se encontr√≥ JS"
+
+      - name: Ì≥§ Subir cambios si los hay
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKN_TRABAJO_FINAL }}
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+
+          git add data/eventos_naturales.json js/eventos_naturales.js
+          git commit -m "Ì¥Å Actualizaci√≥n autom√°tica: eventos naturales en Per√∫" || echo "‚ùå Sin cambios"
+          git push || echo "‚ùå No se pudo hacer push (quiz√° sin cambios)"
+
