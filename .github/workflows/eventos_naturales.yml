@@ -30,4 +30,17 @@ jobs:
           ls -lh data/
           echo "Contenido de /js:"
           ls -lh js/
-          e
+          echo "Vista previa de eventos_naturales.js:"
+          head -n 10 js/eventos_naturales.js || echo "Archivo no encontrado"
+
+      - name: 📤 Subir cambios si los hay
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKN_TRABAJO_FINAL }}
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+
+          git add data/eventos_naturales.json js/eventos_naturales.js
+          git commit -m "Actualización automática: eventos naturales en Perú" || echo "No hay cambios que subir"
+          git push || echo "No se pudo hacer push"
